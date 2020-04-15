@@ -16,6 +16,9 @@ library(forcats)
 
 clim <- read_csv("clim_proj.csv")
 
+# highest of projections = rcp 4.5 cool/wet
+# lowest of projections = rcp 8.5 compliment
+
 hist <- read_csv("hist_flows.csv") %>% 
   select(year, month, streamflow)
 
