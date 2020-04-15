@@ -1,0 +1,41 @@
+---
+title: "Untitled"
+author: "Claire Madden"
+date: "4/14/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse)
+library(forcats)
+
+clim <- read_csv("clim_proj.csv")
+
+hist <- read_csv("hist_flows.csv") %>% 
+  select(year, month, streamflow)
+
+```
+
+
+```{r}
+
+hist_avg <- hist %>%
+  filter(year != 1995) %>% 
+  mutate(month = as.factor(month)) %>% 
+  group_by(month) %>% 
+  summarize(meanflow = mean(streamflow))
+
+
+
+
+```
+
+
+
+
+
