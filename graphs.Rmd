@@ -20,25 +20,105 @@ clim <- read_csv("clim_proj.csv")
 # lowest of projections = rcp 8.5 compliment
 
 hist <- read_csv("hist_flows.csv") %>% 
-  select(year, month, streamflow)
+  select(year, month, streamflow) %>% 
+  mutate(
+    month2 = case_when(
+      month == "October" ~ "1",
+      month == "November" ~ "2",
+      month == "December" ~ "3",
+      month == "January" ~ "4",
+      month == "February" ~ "5",
+      month == "March" ~ "6",
+      month == "April" ~ "7",
+      month == "May" ~ "8",
+      month == "June" ~ "9",
+      month == "July" ~ "10",
+      month == "August" ~ "11",
+      month == "September" ~ "12"
+    )) %>% 
+  mutate(month2 = factor(month2, levels = unique(month2)))
+
 
 ```
 
 
 ```{r}
 
+# Organizing (badly) the data to get it ready for plotting
+
 hist_avg <- hist %>%
   filter(year != 1995) %>% 
-  mutate(month = as.factor(month)) %>% 
-  group_by(month) %>% 
-  summarize(meanflow = mean(streamflow))
+  group_by(month2) %>% 
+  summarize(meanflow = mean(streamflow)) 
 
+clim_high_45coolwet <- clim %>% 
+  filter(rcp == "rcp45", scenario == "coolwet")
 
+clim_low_85compliment <- clim %>% 
+  filter(rcp == "rcp85", scenario == "comp")
+
+clim_low_high <- inner_join(clim_low_45coolwet, clim_high_85compliment, by = "month") %>% 
+  mutate(low = streamflow.y) %>% 
+  mutate(high = streamflow.x) %>% 
+  select(month, low, high) %>% 
+  mutate(
+    month2 = case_when(
+      month == "October" ~ "1",
+      month == "November" ~ "2",
+      month == "December" ~ "3",
+      month == "January" ~ "4",
+      month == "February" ~ "5",
+      month == "March" ~ "6",
+      month == "April" ~ "7",
+      month == "May" ~ "8",
+      month == "June" ~ "9",
+      month == "July" ~ "10",
+      month == "August" ~ "11",
+      month == "September" ~ "12",
+    ))%>% 
+  mutate(month2 = factor(month2, levels = unique(month2)))
+  
 
 
 ```
 
+```{r}
+# start putting on a plot (individually first, to make easier to edit, then will pop together)
+
+# historical plot
+
+historical_plot <- ggplot(hist, aes(x = month2, y = streamflow, group = year)) +
+  geom_line(color = "gray80") +
+  theme_minimal()
+
+historical_plot
+  
+```
+
+```{r}
+# historical avg
+
+# historical plot
+
+historical_avg_plot <- ggplot(hist_avg) +
+  geom_line(aes(x = month2, y = meanflow, group = 1), color = "black", linetype = "dashed") +
+  theme_minimal()
+
+historical_avg_plot
+```
+
+```{r}
+# getting the climate lines on there
+
+# still need to work on filling them in
 
 
+climate_plot_nofill <- ggplot(clim_low_high) +
+  geom_line(aes(x = month2, y = low, group = 1), color = "red") +
+  geom_line(aes(x = month2, y = high, group = 1), color = "blue")
+
+climate_plot_nofill
+  
+```
 
 
