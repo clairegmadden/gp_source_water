@@ -47,7 +47,28 @@ clim_low_high <- inner_join(clim_high_45coolwet, clim_low_85compliment, by = "mo
   mutate(high = streamflow.x) %>% 
   select(month, low, high) %>% 
   mutate(month = factor(month, levels = unique(month)))
+
+clim_45_high <- clim %>% 
+  filter(rcp == "rcp45", scenario == "coolwet") 
+
+clim_45_low <- clim %>% 
+  filter(rcp == "rcp45", scenario == "comp") 
   
+clim_85_high <- clim %>% 
+  filter(rcp == "rcp85", scenario == "coolwet") 
+
+clim_85_low <- clim %>% 
+  filter(rcp == "rcp85", scenario == "comp") 
+
+rcp45_ribbon <- inner_join(clim_45_high, clim_45_low, by = "month") %>% 
+  mutate(low = streamflow.y) %>% 
+  mutate(high = streamflow.x) %>% 
+  mutate(month = factor(month, levels = unique(month)))
+
+rcp85_ribbon <- inner_join(clim_85_high, clim_85_low, by = "month") %>% 
+  mutate(low = streamflow.y) %>% 
+  mutate(high = streamflow.x) %>% 
+  mutate(month = factor(month, levels = unique(month)))
 
 
 ```
@@ -91,6 +112,7 @@ clim_plot_fill
 
 ```{r}
 # putting them all together!
+# one climate ribbon
 
 final_plot <- ggplot() +
   geom_line(data = hist, aes(x = month, y = streamflow, group = year), color = "gray75") +
@@ -100,5 +122,18 @@ final_plot <- ggplot() +
   
 final_plot
   
+```
+
+```{r}
+# two climate ribbons
+
+final_plot_2 <- ggplot() +
+  geom_line(data = hist, aes(x = month, y = streamflow, group = year), color = "gray75") +
+  geom_line(data = hist_avg, aes(x = month, y = meanflow, group = 1), color = "black", linetype = "dashed") +
+  geom_ribbon(data = rcp45_ribbon, aes(x=month, ymin = low, ymax = high, group = 1), fill = "blue", alpha = 0.5) +
+  geom_ribbon(data = rcp85_ribbon, aes(x = month, ymin = low, ymax = high, group = 1), fill = "green", alpha = 0.5) +
+  theme_minimal()
+  
+final_plot_2
 ```
 
