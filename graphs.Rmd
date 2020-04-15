@@ -117,8 +117,14 @@ clim_plot_fill
 final_plot <- ggplot() +
   geom_line(data = hist, aes(x = month, y = streamflow, group = year), color = "gray75") +
   geom_line(data = hist_avg, aes(x = month, y = meanflow, group = 1), color = "black", linetype = "dashed") +
-  geom_ribbon(data = clim_low_high, aes(x=month, ymin = low, ymax = high, group = 1), fill = "blue", alpha = 0.3) +
-  theme_minimal()
+  geom_ribbon(data = clim_low_high, aes(x=month, ymin = low, ymax = high, group = 1), fill = "deepskyblue4", alpha = 0.5) +
+  theme_classic()+
+  scale_x_discrete(expand = c(0,0))+
+  scale_y_continuous(expand = c(0,0),
+                     breaks = seq(0,15000, by = 2000))+
+  labs(x = "Month",
+       y = "Mean Monthly Streamflow (cfs)")+
+  theme(axis.text.x = element_text(angle = 35, hjust = 1))
   
 final_plot
   
